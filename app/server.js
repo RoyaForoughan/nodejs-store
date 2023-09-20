@@ -15,16 +15,16 @@ module.exports = class Application {
         this.#PORT = PORT
         this.#DB_URL = DB_URL
         this.configApplication()
-       // this.initRedis()
+        this.initRedis()
         this.connectToMongoDB()
         this.createServer()
         this.createRoutes()
         this.errorHandling()
     }
 
-    // initRedis(){
-    //     require('./utils/init_redis')
-    // }
+    initRedis(){
+        require('./utils/init_redis')
+    }
 
     configApplication(){
         this.#app.use(cors())

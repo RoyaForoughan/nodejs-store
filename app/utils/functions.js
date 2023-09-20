@@ -1,7 +1,8 @@
 const Jwt = require('jsonwebtoken')
-const { SECRET_KEY, ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require('./constant')
+const {  ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require('./constant')
 const createError = require('http-errors')
 const { UserModel } = require('../models/users')
+const redisClient = require('./init_redis')
 
 function RandomNumberGenerator(){
     return Math.floor((Math.random() * 90000) + 10000)
@@ -30,8 +31,9 @@ function signRefreshToken(userId){
         const options ={
             expiresIn : '1y'
         }
-        Jwt.sign(payload , REFRESH_TOKEN_SECRET_KEY , options , (err, token)=>{
+        Jwt.sign(payload , REFRESH_TOKEN_SECRET_KEY , options ,async (err, token)=>{
             if(err) reject(createError.InternalServerError('خطای سرور'))
+            await redisClient.SETEX(String(userId) , (365*24*60*60) , token)
             resolve(token)
         })
     })
@@ -40,17 +42,13 @@ function signRefreshToken(userId){
 function verifyRefreshToken(token){
     return new Promise((resolve , reject) =>{
         Jwt.verify(token , REFRESH_TOKEN_SECRET_KEY , async (err , payload)=>{
-            console.log('+++ Token ++++');
-            console.log(token);
-            console.log(err);
             if(err) reject(createError.Unauthorized('وارد حساب کاربری خود شوید'))
             const {mobile} = payload || {}
-            console.log('(((Mobile)))');
-            console.log({mobile});
             const user = await UserModel.findOne({mobile} , {otp:0 , password:0})
             if(!user) reject(createError.Unauthorized('کاربری یافت نشد'))
-            resolve(mobile)
-        
+            const refreshToken = await redisClient.get(String(user?._id))
+            if(token === refreshToken) return  resolve(mobile)       
+            reject(createError.Unauthorized('ورود مجدد به حساب کاربری انجام نشد'))
         })
     })
 }

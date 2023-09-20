@@ -3,7 +3,8 @@ const { EXPIRES_IN, USER_ROLE } = require("../../../../utils/constant")
 const { RandomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require("../../../../utils/functions")
 const { getOtpSchima , checkOtpSchima } = require("../../../validators/user/authSchima")
 const createError = require('http-errors')
-const Controller = require("../../controller")
+const Controller = require("../../Controller")
+
 class UserAuthController extends Controller {
     async getOtp(req,res,next){
         try {
@@ -48,12 +49,8 @@ class UserAuthController extends Controller {
     async refreshToken(req,res,next){
         try {
             const {refreshToken} = req.body
-            console.log('+++RefreshToken++++');
-            console.log({refreshToken});
             const mobile = await verifyRefreshToken(refreshToken) 
             const user = await UserModel.findOne({mobile})
-            console.log('--USER--');
-            console.log(user);
             const accessToken = await signAccessToken(user._id)
             const newRefreshToken = await signRefreshToken(user._id)
             return res.json({
@@ -70,7 +67,7 @@ class UserAuthController extends Controller {
     async saveUser(mobile , code){
         let otp = {
             code ,
-            expiresIn : EXPIRES_IN
+            expiresIn : (new Date().getTime() + 120000)
         }
         const result = await this.checkExistUser(mobile)
         if(result){

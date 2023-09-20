@@ -1,12 +1,58 @@
-//const redisClient = require('../utils/init_redis')
+const redisClient = require('../utils/init_redis')
 const { HomeRoutes } = require('./api')
 const { usreAuthRoutes } = require('./user/auth')
 const router = require('express').Router()
-// (async() => {
+
+
+redisClient.set('key', 'value', (err, reply) => {
+    if (err) throw err;
+    console.log(reply);
+
+    redisClient.get('key', (err, value) => {
+        if (err) throw err;
+        console.log(value);
+    });
+})
+
+
+
+
+
+
+// redisClient.set('key' , 'value' , (err,reply)=>{
+    //     if(err) console.log(err.message);
+    //     console.log(reply);
+    // })
+    // redisClient.get('key' , (err , value)=>{
+        //     if(err) console.log(err.message);
+        //     console.log(value);
+        // })
+        
+        
+        
+        // function getCacheById(key) {
+        //     return new Promise((resv, rej) => {
+        //       redisClient.set(key , (err, reply) => {
+        //         if(err) rej(console.log(err.message))
+        //         resv(reply);
+        //       });
+        //       redisClient.get(key, (err, value) => {
+        //         if(err) rej(console.log(err.message))
+        //         resv(value);
+        //       });
+        //     })
+            
+        //   }
+        
+        //   getCacheById()
+       
+       
+       
+        // (async() => {
 //     await redisClient.set('key' , 'value')
 //     const value = redisClient.get('key')
 //     console.log(value);
-// })
+// })()
 
 router.use('/user' , usreAuthRoutes)
 router.use('/' , HomeRoutes)
