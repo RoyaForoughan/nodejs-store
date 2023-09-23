@@ -1,9 +1,10 @@
 const { UserModel } = require("../../../../models/users")
-const { EXPIRES_IN, USER_ROLE } = require("../../../../utils/constant")
+const { ROLES } = require("../../../../utils/constant")
 const { RandomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require("../../../../utils/functions")
 const { getOtpSchima , checkOtpSchima } = require("../../../validators/user/authSchima")
 const createError = require('http-errors')
-const Controller = require("../../Controller")
+const Controller = require("../../controller")
+
 
 class UserAuthController extends Controller {
     async getOtp(req,res,next){
@@ -76,7 +77,7 @@ class UserAuthController extends Controller {
         return (await UserModel.create({
             mobile,
             otp,
-            Roles:[USER_ROLE]
+            Roles:[ROLES.USER]
         }))
     }
     
