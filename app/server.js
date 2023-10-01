@@ -90,7 +90,7 @@ module.exports = class Application {
         this.#app.use((req,res,next) => {     
             next(createError.NotFound('صفحه مورد نظر یافت نشد'))
         })
-        this.#app.use((error , req,res,next) => {
+        this.#app.use((error, req, res, next) => {
             const serverError = createError.InternalServerError()
             const statusCode = error.status || serverError.status
             const message = error.message || serverError.message

@@ -1,8 +1,9 @@
 const { CategoryModel } = require("../../../models/categories")
 const { addCategorySchima, updateCategorySchima } = require("../../validators/admin/categorySchima")
 const createError = require('http-errors')
-const Controller = require("../controller")
+
 const mongoose = require('mongoose')
+const Controller = require("../Controller")
 class CategoryController extends Controller {
     async addCategory(req,res,next){
         try {
@@ -202,23 +203,19 @@ class CategoryController extends Controller {
             const {title} = req.body
             await this.checkExistCategory(id)
             await updateCategorySchima.validateAsync(req.body)
-            console.log('_____id title ___');
-            console.log({title});
-            console.log({id});
-            const resultUpdate = await CategoryModel.updateOne({_id : id} , {$set : {title}})
-            console.log('||||||CategoryModel.updateOne({_id : id} , {$set : {title}})||||');
-            console.log({_id : id} , {$set : {title}});
-            console.log('+++resultUpdate++++');
-            console.log(resultUpdate);
+
+            const resultUpdate = await CategoryModel.updateOne(
+                { _id: id },
+                { $set: {title} }
+            );
+
             if(resultUpdate.modifiedCount == 0 ) throw createError.InternalServerError('به روز رسانی انجام نشد')
-            console.log('===resultUpdate.modifiedCount == 0====');
-            console.log(resultUpdate.modifiedCount == 0);
-            return req.status(200).json({
+            return res.status(200).json({
                 data:{
-                    statusCode:200, 
-                    message:'به روز رسانی با موفقیت انجام شد'
-                }
-        })
+                        statusCode:200, 
+                        message:'به روز رسانی با موفقیت انجام شد'
+                    }
+                })
         } catch (error) {
             next()
         }
