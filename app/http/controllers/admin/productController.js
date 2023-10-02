@@ -3,6 +3,8 @@ const { createProductSchema } = require("../../validators/admin/produc.schema");
 const Controller = require("../Controller");
 const { deleteFileInPublic, ListOfImagesFromRequest } = require("../../../utils/functions");
 const { ProductModel } = require("../../../models/products");
+const { ObjectIdValidator } = require('../../validators/public.validator');
+const createError = require('http-errors')
 
 class ProductController extends Controller{
     async addProduct(req,res,next){
@@ -15,16 +17,16 @@ class ProductController extends Controller{
             const supplier = req.user._id
 
             let feature = {} , type = 'physical'
-            if(width || height || length || weight ){
+            if(isNaN(+width) || isNaN(+height) || isNaN(+length) || isNaN(+weight) ){
 
                 if(!width) feature.width = 0
-                else feature.width = width
+                else feature.width = +width
                 if(!height) feature.height = 0
-                else feature.height = height
+                else feature.height = +height
                 if(!length) feature.length = 0
-                else feature.length = length
+                else feature.length = +length
                 if(!weight) feature.weight = 0
-                else feature.weight = weight
+                else feature.weight = +weight
             }else{
                 type = 'virtual'
             }
@@ -67,6 +69,47 @@ class ProductController extends Controller{
             next(error)
         }
     }
+
+    async getOneProduct(req,res,next){
+        try {
+            const {id} = req.params
+            const product = await this.findProductById(id)
+            return res.status(200).json({
+                data:{
+                    statusCode:200 , 
+                    product
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async removeProductById(req,res,next){
+        try {
+            const {id} = req.params
+            const product = await this.findProductById(id)
+            const removeProduct = await ProductModel.deleteOne({_id : product._id})
+            if(removeProduct.deletedCount == 0) throw createError.InternalServerError()
+            return res.status(200).json({
+                data:{
+                    statusCode:200 , 
+                    message:'حذف با موفقیت انجام شد'
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async findProductById(productId){
+        const {id} = await ObjectIdValidator.validateAsync({id : productId})
+        const product = await ProductModel.findById(id)
+        if(!product) throw createError.NotFound('محصولی یافت نشد')
+        return product
+    }
+
+    
 }
 
 module.exports = {
