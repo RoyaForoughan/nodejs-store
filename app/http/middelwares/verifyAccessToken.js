@@ -33,11 +33,7 @@ function checkRole(role){
     return function(req,res,next){
         try {
             const user = req.user
-            console.log('===========');
-            console.log(user);
             if(user.Role.includes(role)) return next()
-            console.log('+++++++++++');
-            console.log(user.Roles.includes(role));
             throw createError.Forbidden('شما به این قسمت دسترسی ندارید')
             
         } catch (error) {

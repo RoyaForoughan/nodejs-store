@@ -12,5 +12,5 @@ router.delete('/:id' , AdminBlogController.deleteBlogById)
 router.get('/:id' , AdminBlogController.getOneBlogById)
 
 module.exports = {
-    BlogAdminApiRoutes : router
+    AdminApiBlogRoutes : router
 }

@@ -1,10 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const CommentSchema = new mongoose.Schema({
-    user:{type:mongoose.Types.ObjectId,ref:'user' , required:true},
-    comment:{type:String , required:true},
-   // createdAt:{type:Date() , default:new Date().getTime()},
-    parent:{type:mongoose.Types.ObjectId}
-})
+const { CommentSchema } = require("./public.schema");
 const BlogSchema = new mongoose.Schema({
     author : {type : mongoose.Types.ObjectId, ref: "user", required : true},
     title : {type : String, required : true},
@@ -18,23 +13,25 @@ const BlogSchema = new mongoose.Schema({
     dislikes : {type : [mongoose.Types.ObjectId], ref: "user", default : []},
     bookmarks : {type : [mongoose.Types.ObjectId], ref: "user", default : []}
 }, {
-    timestamps : {createdAt: true} ,
+    timestamps : true, 
     versionKey : false,
-    toJSON:{
-        virtuals:true
+    toJSON : {
+        virtuals: true
     }
 });
-BlogSchema.virtual('user' , {
-    ref:'user',
-    localField:'_id',
-    foreignField:'author'
+BlogSchema.virtual("user", {
+    ref : "user",
+    localField : "_id",
+    foreignField: "author"
 })
-BlogSchema.virtual('category_detail',{
-    ref:'category',
-    localField:'_id',
-    foreignField:'category'
+BlogSchema.virtual("category_detail", {
+    ref : "category",
+    localField : "_id",
+    foreignField: "category"
 })
-
+BlogSchema.virtual("imageURL").get(function(){
+    return `${process.env.BASE_URL}:${process.env.APPLICATION_PORT}/${this.image}`
+})
 module.exports = {
     BlogModel : mongoose.model("blog", BlogSchema)
 }
