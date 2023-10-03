@@ -5,6 +5,7 @@ const { deleteFileInPublic, ListOfImagesFromRequest } = require("../../../utils/
 const { ProductModel } = require("../../../models/products");
 const { ObjectIdValidator } = require('../../validators/public.validator');
 const createError = require('http-errors')
+const {StatusCodes : HttpStatus} = require('http-status-codes')
 
 class ProductController extends Controller{
     async addProduct(req,res,next){
@@ -44,9 +45,9 @@ class ProductController extends Controller{
                 supplier,
                 type
             })
-            return res.status(201).json({
+            return res.status(HttpStatus.CREATED).json({
                 data:{
-                    statusCode : 201 , 
+                    statusCode : HttpStatus.CREATED , 
                     message : 'ثبت محصول با موفقیت انجام شد',
                     product
                 }
@@ -58,10 +59,20 @@ class ProductController extends Controller{
     }
     async getAllProducts(req,res,next){
         try {
-            const products = await ProductModel.find({})
-            return res.status(200).json({
+            const search = req?.query?.search || ''
+            let products 
+             if(search){
+                products = await ProductModel.find({
+                    $text:{
+                        $search: new RegExp(search , 'ig')
+                    }
+                 })
+             }else{
+                products = await ProductModel.find({})
+             }
+            return res.status(HttpStatus.OK).json({
                 data:{
-                    statusCode:200,
+                    statusCode:HttpStatus.OK,
                     products
                 }
             })
@@ -74,9 +85,9 @@ class ProductController extends Controller{
         try {
             const {id} = req.params
             const product = await this.findProductById(id)
-            return res.status(200).json({
+            return res.status(HttpStatus.OK).json({
                 data:{
-                    statusCode:200 , 
+                    statusCode:HttpStatus.OK , 
                     product
                 }
             })
@@ -91,9 +102,9 @@ class ProductController extends Controller{
             const product = await this.findProductById(id)
             const removeProduct = await ProductModel.deleteOne({_id : product._id})
             if(removeProduct.deletedCount == 0) throw createError.InternalServerError()
-            return res.status(200).json({
+            return res.status(HttpStatus.OK).json({
                 data:{
-                    statusCode:200 , 
+                    statusCode:HttpStatus.OK , 
                     message:'حذف با موفقیت انجام شد'
                 }
             })
