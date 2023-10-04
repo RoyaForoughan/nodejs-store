@@ -4,7 +4,7 @@ const path = require('path')
 const createError = require('http-errors')
 const { BlogModel } = require("../../../models/blogs")
 const { deleteFileInPublic } = require("../../../utils/functions")
-const {statusCodes : HttpStatus} = require('http-status-codes')
+const {StatusCodes : HttpStatus} = require('http-status-codes')
 
 class BlogController extends Controller {
     async createBlog(req, res, next){

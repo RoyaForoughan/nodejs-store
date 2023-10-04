@@ -1,11 +1,23 @@
 const path = require('path')
 const { createProductSchema } = require("../../validators/admin/produc.schema");
 const Controller = require("../Controller");
-const { deleteFileInPublic, ListOfImagesFromRequest } = require("../../../utils/functions");
+const { deleteFileInPublic, ListOfImagesFromRequest, setFeatures, copyObject, deleteInvalidPropertyInObject } = require("../../../utils/functions");
 const { ProductModel } = require("../../../models/products");
 const { ObjectIdValidator } = require('../../validators/public.validator');
 const createError = require('http-errors')
 const {StatusCodes : HttpStatus} = require('http-status-codes')
+const ProductBlackList = {
+    BOOKMARKS: "bookmarks",
+    LIKES: "likes",
+    DISLIKES: "dislikes",
+    COMMENTS: "comments",
+    SUPPLIER: "supplier",
+    WEIGHT: "weight",
+    WIDTH: "width",
+    LENGTH: "length",
+    HEIGHT: "height",
+    COLORS: "colors"
+  }
 
 class ProductController extends Controller{
     async addProduct(req,res,next){
@@ -14,23 +26,10 @@ class ProductController extends Controller{
             const productBody = await createProductSchema.validateAsync(req.body)
         
             
-            const {title , text , short_text , category , tags , count , price , discount, width , height , weight , length } = productBody
+            const {title , text , short_text , category , tags , count , price , discount} = productBody
             const supplier = req.user._id
-
-            let feature = {} , type = 'physical'
-            if(isNaN(+width) || isNaN(+height) || isNaN(+length) || isNaN(+weight) ){
-
-                if(!width) feature.width = 0
-                else feature.width = +width
-                if(!height) feature.height = 0
-                else feature.height = +height
-                if(!length) feature.length = 0
-                else feature.length = +length
-                if(!weight) feature.weight = 0
-                else feature.weight = +weight
-            }else{
-                type = 'virtual'
-            }
+            let features = setFeatures(req.body)
+          
             const product = await ProductModel.create({
                 title,
                 text,
@@ -41,7 +40,7 @@ class ProductController extends Controller{
                 price,
                 discount,
                 images , 
-                feature,
+                features,
                 supplier,
                 type
             })
@@ -118,6 +117,29 @@ class ProductController extends Controller{
         const product = await ProductModel.findById(id)
         if(!product) throw createError.NotFound('محصولی یافت نشد')
         return product
+    }
+
+    async editProduct(req,res,next){
+        try {
+            const {id} = req.params
+            const product = await this.findProductById(id)
+           const data = copyObject(req.body) 
+           data.images = ListOfImagesFromRequest(req?.files || [] , req.body.fileUploadPath)
+           data.features = setFeatures(req.body)
+          
+          let blackListFeild = Object.values(ProductBlackList)
+          deleteInvalidPropertyInObject(data , blackListFeild)
+           const updateResult = await ProductModel.updateOne({_id : product._id} , {$set:data})
+           if(updateResult.modifiedCount == 0) throw {status: HttpStatus.INTERNAL_SERVER_ERROR , message:'خطای داخلی'}
+           return res.status(HttpStatus.OK).json({
+            data:{
+                statusCode:HttpStatus.OK,
+                message:'به روز رسانی با موفقییت انجام شد'
+            }
+           })
+        } catch (error) {
+            next(error)
+        }
     }
 
     

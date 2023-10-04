@@ -69,6 +69,41 @@ function ListOfImagesFromRequest(files , fileUploadPath){
         return []
     }
 }
+function setFeatures(body){
+    const {colors , width , length , height , weight} = body
+    let features = {} ,type = 'physical'
+    features.colors = colors
+
+    if(isNaN(+width) || isNaN(+height) || isNaN(+length) || isNaN(+weight) ){
+
+        if(!width) features.width = 0
+        else features.width = +width
+        if(!height) features.height = 0
+        else features.height = +height
+        if(!length) features.length = 0
+        else features.length = +length
+        if(!weight) features.weight = 0
+        else features.weight = +weight
+    }else{
+        type = 'virtual'
+    }
+}
+
+function copyObject(object){
+    return JSON.parse(JSON.stringify(object))
+}
+
+function deleteInvalidPropertyInObject(data={}, blackListFeild = []){
+    const nullishData = ['' , ' ' , 0 , null , undefined , '0']
+
+    Object.keys(data).forEach(key => {
+        if(blackListFeild.includes(key)) delete data[key]
+        if(typeof data[key] == 'string') data[key] = data[key].trim()
+        if(Array.isArray(data[key] && data[key].length > 0)) data[key] = data[key].map(item => item.trim())
+        if(Array.isArray(data[key] && data[key].length == 0)) delete data[key] 
+        if(nullishData.includes(data[key])) delete data[key]
+   })
+}
 
 module.exports = {
     RandomNumberGenerator,
@@ -76,5 +111,8 @@ module.exports = {
     signRefreshToken,
     verifyRefreshToken,
     deleteFileInPublic,
-    ListOfImagesFromRequest
+    ListOfImagesFromRequest,
+    copyObject,
+    setFeatures,
+    deleteInvalidPropertyInObject
 }

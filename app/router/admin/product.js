@@ -8,6 +8,7 @@ router.post('/add' , uploadFile.array('images', 10) , stringToArray("tags"), Pro
 router.get('/all' , ProductController.getAllProducts)
 router.get('/:id', ProductController.getOneProduct)
 router.delete('/remove/:id', ProductController.removeProductById)
+router.patch('/edit/:id',uploadFile.array("images", 10), stringToArray("tags", "colors"), ProductController.editProduct)
 module.exports = {
     AdminApiProductRoutes : router
 }
