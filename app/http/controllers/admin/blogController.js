@@ -17,8 +17,8 @@ class BlogController extends Controller {
             const author = req.user._id
             const blog = await BlogModel.create({title , image, text , short_text , tags , category , author})
             return res.status(HttpStatus.CREATED).json({
+                statusCode : HttpStatus.CREATED,
                 data:{
-                    statusCode : HttpStatus.CREATED,
                     message: 'ایجاد بلاگ با موفقیت انجام شد'
                 }
             })
@@ -67,8 +67,8 @@ class BlogController extends Controller {
 
             ])
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK,
                 data:{
-                    statusCode:HttpStatus.OK,
                     blogs
                 }
             })
@@ -82,8 +82,8 @@ class BlogController extends Controller {
             const {id} = req.params
             const blog = await this.findBlog(id)
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK,
                 data:{
-                    statusCode:HttpStatus.OK,
                     blog
                 }
             })
@@ -99,8 +99,8 @@ class BlogController extends Controller {
             const result = await BlogModel.deleteOne({_id : id})
             if(result.deletedCount == 0 ) throw createError.InternalServerError('حذف انجام نشد')
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK,
                 data:{
-                    statusCode:HttpStatus.OK,
                     message:'حذف با موفقیت انجام شد'
                 }
             })
@@ -135,8 +135,8 @@ class BlogController extends Controller {
             const updateResult = await BlogModel.updateOne({_id : id} , {$set : data})
             if(updateResult.modifiedCount == 0) throw createError.InternalServerError('به روز رسانی انجام نشد')
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK,
                 data:{
-                    statusCode:HttpStatus.OK,
                     message:'به روز رسانی با موفقیت انجام شد'
                 }    
             })

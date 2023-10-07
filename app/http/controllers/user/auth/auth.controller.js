@@ -3,7 +3,10 @@ const { ROLES } = require("../../../../utils/constant")
 const { RandomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require("../../../../utils/functions")
 const { getOtpSchima , checkOtpSchima } = require("../../../validators/user/authSchima")
 const createError = require('http-errors')
-const Controller = require("../../controller")
+const {StatusCodes : HttpStatus} = require('http-status-codes')
+const Controller = require("../../Controller")
+
+
 
 
 class UserAuthController extends Controller {
@@ -14,11 +17,13 @@ class UserAuthController extends Controller {
             const code = RandomNumberGenerator()
             const result = await this.saveUser(mobile , code)
             if(!result) throw createError.Unauthorized('ورود انجام نشد')
-            return res.status(200).send({
-                statusCode:200,
-                message:'ورود شما با موفقیت انجام شد',
-                mobile,
-                code
+            return res.status(HttpStatus.OK).send({
+                statusCode:HttpStatus.OK,
+                data:{
+                    message:'ورود شما با موفقیت انجام شد',
+                    mobile,
+                    code
+                }
             })
         } catch (error) {
             next(error)
@@ -36,7 +41,8 @@ class UserAuthController extends Controller {
             if(+user.otp.expiresIn < now ) throw createError.Unauthorized('کد ارسال شده منقضی شده است')
             const accessToken = await signAccessToken(user._id)
             const refreshToken = await signRefreshToken(user._id)
-            return res.json({
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
                 data:{
                     accessToken,
                     refreshToken
@@ -54,7 +60,8 @@ class UserAuthController extends Controller {
             const user = await UserModel.findOne({mobile})
             const accessToken = await signAccessToken(user._id)
             const newRefreshToken = await signRefreshToken(user._id)
-            return res.json({
+            return res.status(HttpStatus.OK).json({
+                statusCode : HttpStatus.OK ,
                 data : {
                     accessToken , 
                     refreshToken : newRefreshToken

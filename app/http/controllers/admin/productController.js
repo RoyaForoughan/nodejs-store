@@ -45,8 +45,8 @@ class ProductController extends Controller{
                 type
             })
             return res.status(HttpStatus.CREATED).json({
+                statusCode : HttpStatus.CREATED , 
                 data:{
-                    statusCode : HttpStatus.CREATED , 
                     message : 'ثبت محصول با موفقیت انجام شد',
                     product
                 }
@@ -70,8 +70,8 @@ class ProductController extends Controller{
                 products = await ProductModel.find({})
              }
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK,
                 data:{
-                    statusCode:HttpStatus.OK,
                     products
                 }
             })
@@ -85,8 +85,8 @@ class ProductController extends Controller{
             const {id} = req.params
             const product = await this.findProductById(id)
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK , 
                 data:{
-                    statusCode:HttpStatus.OK , 
                     product
                 }
             })
@@ -102,8 +102,8 @@ class ProductController extends Controller{
             const removeProduct = await ProductModel.deleteOne({_id : product._id})
             if(removeProduct.deletedCount == 0) throw createError.InternalServerError()
             return res.status(HttpStatus.OK).json({
+                statusCode:HttpStatus.OK , 
                 data:{
-                    statusCode:HttpStatus.OK , 
                     message:'حذف با موفقیت انجام شد'
                 }
             })
@@ -121,7 +121,7 @@ class ProductController extends Controller{
 
     async editProduct(req,res,next){
         try {
-            const {id} = req.params
+            const {id} = req.query
             const product = await this.findProductById(id)
            const data = copyObject(req.body) 
            data.images = ListOfImagesFromRequest(req?.files || [] , req.body.fileUploadPath)
@@ -132,8 +132,8 @@ class ProductController extends Controller{
            const updateResult = await ProductModel.updateOne({_id : product._id} , {$set:data})
            if(updateResult.modifiedCount == 0) throw {status: HttpStatus.INTERNAL_SERVER_ERROR , message:'خطای داخلی'}
            return res.status(HttpStatus.OK).json({
+               statusCode:HttpStatus.OK,
             data:{
-                statusCode:HttpStatus.OK,
                 message:'به روز رسانی با موفقییت انجام شد'
             }
            })

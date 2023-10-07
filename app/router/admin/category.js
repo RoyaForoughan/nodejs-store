@@ -12,5 +12,5 @@ router.get('/:id' , CategoryController.getCategoryById)
 router.patch('/update/:id' , CategoryController.editCategoryTitle)
 
 module.exports = {
-    AdminApiCategoryRoutes : router
+    AdminApiCategoryRouter : router
 }
