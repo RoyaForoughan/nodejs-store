@@ -1,17 +1,30 @@
-const { CourseModel } = require("../../../models/course");
-const { createCourseSchema } = require("../../validators/admin/course.schima");
-const Controller = require("../Controller");
+const { CourseModel } = require("../../../../models/course");
+const { createCourseSchema } = require("../../../validators/admin/course.schima");
+const Controller = require("../../Controller");
 const {StatusCodes : HttpStatus} = require('http-status-codes')
 const createError = require('http-errors')
-const path = require('path')
+const path = require('path');
+const { default: mongoose } = require("mongoose");
 class CourseController extends Controller{
     async getListOfCourse(req,res,next){
         try {
            
             const {search} = req.query
             let courses 
-            if(search) courses = await CourseModel.find({$text : {$search : search}}).sort({_id: -1})
-            else courses = await CourseModel.find({}).sort({_id : -1})
+            if(search) courses = await CourseModel
+            .find({$text : {$search : search}})
+            .populate([
+                {path : 'category' , select : {children:0 , parent : 0}},
+                {path : 'teacher' , select : {first_name : 1 , last_name : 1 , mobile : 1 , email : 1} }
+            ])
+            .sort({_id: -1})
+            else courses = await CourseModel
+            .find({})
+            .populate([
+                {path : 'category' , select : {children:0 , parent : 0}},
+                {path : 'teacher' , select : {first_name : 1 , last_name : 1 , mobile : 1 , email : 1} }
+            ])
+            .sort({_id : -1})
             return res.status(HttpStatus.OK).json({
                 StatusCode : HttpStatus.OK,
                 data:{
@@ -71,6 +84,15 @@ class CourseController extends Controller{
         } catch (error) {
             next(error)
         }
+    }
+
+    
+
+    async FindCourseById(id){
+        if(!mongoose.isValidObjectId(id)) throw createError.BadRequest('شناسه ارسال شده صحیح نمباشد')
+        const course = await CourseModel.findById(id)
+        if(!course) throw createError.NotFound('دوره ای یافت نشد')
+        return course
     }
 }
 

@@ -1,4 +1,4 @@
-const { ProductController } = require('../../http/controllers/admin/productController')
+const { ProductController } = require('../../http/controllers/admin/product/productController')
 const { stringToArray } = require('../../http/middelwares/stringToArray')
 const { uploadFile } = require('../../utils/multer')
 
