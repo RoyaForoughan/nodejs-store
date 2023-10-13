@@ -105,6 +105,24 @@ function deleteInvalidPropertyInObject(data={}, blackListFeild = []){
    })
 }
 
+function getTime(seconds){
+    let total = Math.round(seconds) / 60
+    let [minutes , percent] = String(total).split('.')
+    let second = Math.round((percent * 60 ) / 100).toString().substring(0,2)
+    let hour = 0
+    if(minutes > 60){
+        total = minutes / 60
+        let [h1 , percent] = String(total).split('.')
+        hour = h1,
+        minutes = Math.round((percent * 60 ) / 100).toString().substring(0,2)
+    }
+    if(String(hour).length ==1) hour = `0${hour}`
+    if(String(minutes).length ==1) minutes = `0${minutes}`
+    if(String(second).length ==1) second = `0${second}`
+    
+    return (hour + ":" + minutes + ":" +second)
+}
+
 module.exports = {
     RandomNumberGenerator,
     signAccessToken,
@@ -114,5 +132,6 @@ module.exports = {
     ListOfImagesFromRequest,
     copyObject,
     setFeatures,
-    deleteInvalidPropertyInObject
+    deleteInvalidPropertyInObject,
+    getTime
 }

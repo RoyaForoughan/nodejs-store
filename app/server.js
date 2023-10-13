@@ -5,6 +5,11 @@ const createError = require('http-errors')
 const swaggerUI = require('swagger-ui-express')
 const swaggerJsDoc = require('swagger-jsdoc')
 const cors = require('cors')
+// const dotenv = require('dotenv')
+// const result = dotenv.config({path :'./.env'})
+// if(result.error){
+//     throw result.error
+// }
 const { AllRoutes } = require('./router/router')
 const morgan = require('morgan')
 module.exports = class Application {
