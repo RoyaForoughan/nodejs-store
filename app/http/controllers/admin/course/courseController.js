@@ -5,6 +5,7 @@ const {StatusCodes : HttpStatus} = require('http-status-codes')
 const createError = require('http-errors')
 const path = require('path');
 const { default: mongoose } = require("mongoose");
+const { copyObject, deleteFileInPublic, deleteInvalidPropertyInObject } = require("../../../../utils/functions");
 class CourseController extends Controller{
     async getListOfCourse(req,res,next){
         try {
@@ -87,6 +88,34 @@ class CourseController extends Controller{
     }
 
     
+    async updateCourseById(req,res,next){
+        try {
+            const {id} = req.params
+            const course = await this.FindCourseById(id)
+            const data = copyObject(req.body)
+            const {fileUploadPath , filename} = req.body
+            const blackListFields = ["time", "chapters", "episodes", "students", "bookmarks", "likes", "dislikes", "comments", "fileUploadPath", "filename"]
+            deleteInvalidPropertyInObject(data, blackListFields)
+            if(req.file){
+                data.image = path.join(fileUploadPath , filename)
+                deleteFileInPublic(course.image)
+            }
+            const updateCourseResult = await CourseModel.updateOne({_id:id} , {
+                $set: data
+            })
+            if(!updateCourseResult.modifiedCount) throw createError.InternalServerError('به روز رسانی انجام نشد')
+            return res.status(HttpStatus.OK).json({
+                StatusCode : HttpStatus.OK,
+                data:{
+                    message : 'به روزرسانی با موفقیت انجام شد'
+                }
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
 
     async FindCourseById(id){
         if(!mongoose.isValidObjectId(id)) throw createError.BadRequest('شناسه ارسال شده صحیح نمباشد')
