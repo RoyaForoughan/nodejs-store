@@ -45,7 +45,7 @@ class ChapterController extends Controller{
         try {
             const {chapterID} = req.params
             const chapter =   await this.getOneChapter(chapterID)
-            console.log(chapter);
+            
             const removeChapterResult = await CourseModel.updateOne({'chapters._id' : chapterID} , {
                 $pull : {
                     chapters : {
