@@ -19,7 +19,7 @@ router.use('/chapter' , AdminApiChapterRouter)
 router.use('/episode' , AdminApiEpisodeRouter)
 router.use('/user' , AdminApiUserRouter)
 router.use('/role' , AdminApiRoleRouter)
-router.use('permission' , AdminApiPermissionRouter)
+router.use('/permission' , AdminApiPermissionRouter)
 module.exports = {
     AdminRoutes : router
 }
