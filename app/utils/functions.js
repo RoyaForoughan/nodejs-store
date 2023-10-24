@@ -145,10 +145,6 @@ function getTimeOfCourse(chapters = []){
     minute = Math.floor(second / 60) % 60 // convert secound to minute
     second = Math.floor(second % 60) // convert secound to second
 
-    console.log('hour = minute = second');
-    console.log(hour);
-    console.log(minute);
-    console.log(second);
 
     if(String(hour).length ==1) hour = `0${hour}`
     if(String(minute).length ==1) minute = `0${minute}`
