@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 //const { getTimeOfCourse } = require("../utils/functions");
 const { CommentSchema } = require("./public.schema");
+const { getTimeOfCourse } = require("../utils/functions");
 const Episodes = new mongoose.Schema({
     title: {type: String, required: true},
     text: {type: String, required: true},
@@ -45,9 +46,9 @@ CourseSchema.index({title: "text", short_text: "text", text : "text"})
 CourseSchema.virtual("imageURL").get(function(){
     return `${process.env.BASE_URL}:${process.env.APPLICATION_PORT}/${this.image}`
 })
-// CourseSchema.virtual("totalTime").get(function(){
-//     return getTimeOfCourse(this.chapters || [])
-// })
+CourseSchema.virtual("totalTime").get(function(){
+    return getTimeOfCourse(this.chapters || [])
+})
 
 module.exports = {
     CourseModel : mongoose.model("course", CourseSchema)

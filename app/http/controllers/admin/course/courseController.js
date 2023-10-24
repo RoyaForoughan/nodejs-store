@@ -56,7 +56,6 @@ class CourseController extends Controller{
                 image,
                 teacher,
                 type,
-                time : "00:00:00",
                 status:'notStarted'
             })
             if(!course._id) throw createError.InternalServerError('دوره ثبت نشد')
