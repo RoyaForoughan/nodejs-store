@@ -3,7 +3,7 @@ const Controller = require("../../Controller");
 const {StatusCodes : HttpStatus} = require('http-status-codes')
 const createError = require('http-errors');
 const { addPermissionSchema } = require("../../../validators/admin/RBAC.shema");
-const { copyObject } = require("../../../../utils/functions");
+const { copyObject, deleteInvalidPropertyInObject } = require("../../../../utils/functions");
 class PermissionController extends Controller{
     async getAllPermissions(req,res,next){
         try {
@@ -58,6 +58,7 @@ class PermissionController extends Controller{
             const {id} = req.params
             await this.findPermissionById(id)
             const data = copyObject(req.body)
+            deleteInvalidPropertyInObject(data, [])
             const updatePermissionResult = await PermissionModel.updateOne({_id : id} , {
                 $set : data
             })

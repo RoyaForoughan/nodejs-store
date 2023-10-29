@@ -4,7 +4,7 @@ const createError = require('http-errors');
 
 
 const addRoleSchima = Joi.object({
-    title : Joi.string().min(3).max(30).error(new Error('عنوان نقش صحیح نمباشد')),
+    title : Joi.string().min(3).max(30).error(createError.BadRequest("عنوان نقش صحیح نمیباشد")),
     description : Joi.string().min(0).max(100).error(createError.BadRequest("توضیحات نقش صحیح نمیباشد")),
     permissions : Joi.array().items(Joi.string().pattern(MongoIDPattern)).error(createError.BadRequest('دسترسی های ارسال شده صحیح نمیباشد'))
 })
