@@ -10,6 +10,14 @@
 }
 
 {
+  categories {
+    _id
+    title
+    children
+  }
+}
+
+{
   childOfCategory(parent: "650be6c487a4aa83487262ab") {
     _id
     title
