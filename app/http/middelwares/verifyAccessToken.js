@@ -29,8 +29,30 @@ function verifyAccessToken(req,res,next){
    }
 }
 
+async function verifyAccessTokenInGraphQl(req){
+   try {
+                const token = getToken(req.headers)
+                console.log('token');
+                console.log(token);
+                const {mobile} =  Jwt.verify(token ,ACCESS_TOKEN_SECRET_KEY)
+                console.log('{mobile}');
+                console.log({mobile});
+                const user = await UserModel.findOne({mobile} , {otp:0 , password:0})
+                console.log('userrrr');
+                console.log(user);
+                if(!user) throw createError.Unauthorized('کاربر یافت نشد')
+                return user
+            
+    } catch (error) {
+       throw new createError.Unauthorized()
+        
+
+   }
+}
 
 
 module.exports = {
-    verifyAccessToken
+    verifyAccessToken,
+    verifyAccessTokenInGraphQl,
+    getToken
 }

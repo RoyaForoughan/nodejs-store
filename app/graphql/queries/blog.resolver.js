@@ -1,8 +1,9 @@
 const { GraphQLList } = require("graphql");
 const { BlogType } = require("../typeDefs/blog.type");
 const { BlogModel } = require("../../models/blogs");
+const { verifyAccessTokenInGraphQl } = require("../../http/middelwares/verifyAccessToken");
 
-const blogResolver = {
+const BlogResolver = {
     type : new GraphQLList(BlogType),
     resolve : async () => {
         return await BlogModel.find({}).populate([{path:'author'} , {path : 'category'}])
@@ -10,5 +11,5 @@ const blogResolver = {
 }
 
 module.exports = {
-    blogResolver
+    BlogResolver
 }
