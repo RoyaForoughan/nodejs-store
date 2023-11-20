@@ -1,18 +1,34 @@
 {
-  products {
-    id
+  products{
+    _id
     title
-    text
     imagesURL
     short_text
-    images
+    text
+    tags
     supplier {
       first_name
       last_name
     }
     category {
-      id
       title
+      _id
+    }
+    features {
+      height
+      width
+      weight
+      colors
+      length
+      
+    }
+    comments{
+      _id
+      comment
+      user {
+        first_name
+        last_name
+      }
     }
   }
 }

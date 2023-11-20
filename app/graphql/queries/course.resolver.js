@@ -10,7 +10,13 @@ const CourseResolver = {
     resolve : async(_ , args) => {
         const {category} = args
         const findQuery = category ? {category} : {}
-        return await CourseModel.find(findQuery).populate([{path:'teacher'} , {path:'category'}])
+        return await CourseModel.find(findQuery)
+        .populate([
+            {path:'teacher'} , 
+            {path:'category'},
+            {path:'comments.user'},
+            {path : 'comments.answers.user'}
+    ])
     }
 }
 

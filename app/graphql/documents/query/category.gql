@@ -1,5 +1,5 @@
 {
-  categories {
+  categories  {
     _id
     title
     children {
@@ -10,15 +10,7 @@
 }
 
 {
-  categories {
-    _id
-    title
-    children
-  }
-}
-
-{
-  childOfCategory(parent: "650be6c487a4aa83487262ab") {
+  childOfCategory (parent : "6279e994c1e47a98d0f356d3") {
     _id
     title
   }
