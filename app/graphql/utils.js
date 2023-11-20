@@ -1,4 +1,8 @@
 const { Kind } = require("graphql")
+const { ProductModel } = require("../models/products");
+const { CourseModel } = require("../models/course");
+const { BlogModel } = require("../models/blogs");
+        
 
 function parseObject(valueNode){
     const value = Object.create(null)
@@ -46,9 +50,30 @@ function toObject(value){
     return null
 }
 
+
+async function checkExistBlog(id){
+    const blog = await BlogModel.findById(id)
+    if(!blog) throw new createError.NotFound('بلاگی با این مشخصات یافت نشد')
+    return blog
+}
+
+async function checkExistProduct(id){
+    const product = await ProductModel.findById(id)
+    if(!product) throw new createError.NotFound('محصولی با این مشخصات یافت نشد')
+    return product
+}
+async function checkExistCourse(id){
+    const course = await CourseModel.findById(id)
+    if(!course)  throw new createError.NotFound('دوره ای با این مشخصات یافت نشد')
+    return course
+}
+
 module.exports = {
     toObject,
     parseLiteral,
     parseValueNode,
-    parseObject
+    parseObject,
+    checkExistBlog,
+    checkExistCourse,
+    checkExistProduct
 }

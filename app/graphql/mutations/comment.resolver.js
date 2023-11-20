@@ -1,5 +1,4 @@
 const { GraphQLString } = require("graphql");
-const { CommentType } = require("../typeDefs/comment.type");
 const { BlogModel } = require("../../models/blogs");
 const createError = require('http-errors');
 const { default: mongoose } = require("mongoose");
@@ -9,6 +8,7 @@ const { ResponseType } = require("../typeDefs/public.type");
 const { copyObject } = require("../../utils/functions");
 const { ProductModel } = require("../../models/products");
 const { CourseModel } = require("../../models/course");
+const { checkExistCourse, checkExistProduct, checkExistBlog } = require("../utils");
 const CreateCommentForBlog = {
     type: ResponseType,
     args:{
@@ -189,22 +189,7 @@ const CreateCommentForCourse = {
     }
 }
 
-async function checkExistBlog(id){
-    const blog = await BlogModel.findById(id)
-    if(!blog) throw new createError.NotFound('بلاگی با این مشخصات یافت نشد')
-    return blog
-}
 
-async function checkExistProduct(id){
-    const product = await ProductModel.findById(id)
-    if(!product) throw new createError.NotFound('محصولی با این مشخصات یافت نشد')
-    return product
-}
-async function checkExistCourse(id){
-    const course = await CourseModel.findById(id)
-    if(!course)  throw new createError.NotFound('دوره ای با این مشخصات یافت نشد')
-    return course
-}
 
 async function getComment(model , id){
     const findComment = await model.findOne({'comments._id': id} , {'comments.$' : 1})
