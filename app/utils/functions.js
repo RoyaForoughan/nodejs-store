@@ -5,6 +5,8 @@ const { UserModel } = require('../models/users')
 const redisClient = require('./init_redis')
 const path = require('path')
 const fs = require('fs')
+const moment = require("moment-jalali");
+
 
 function RandomNumberGenerator(){
     return Math.floor((Math.random() * 90000) + 10000)
@@ -247,6 +249,10 @@ async function getBasketOfUser(userID){
     return copyObject(userDetail)
 }
 
+function invoiceNumberGenerator(){
+    return moment().format('jYYYYjMMjDDHHmmssSS') + String(proccess.hrtime()[1]).padStart(9,0)
+}
+
 module.exports = {
     RandomNumberGenerator,
     signAccessToken,
@@ -259,5 +265,6 @@ module.exports = {
     deleteInvalidPropertyInObject,
     getTime,
     getTimeOfCourse,
-    getBasketOfUser
+    getBasketOfUser,
+    invoiceNumberGenerator
 }
