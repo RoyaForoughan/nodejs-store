@@ -8,7 +8,7 @@ const { CourseModel } = require("../../models/course");
 const { ProductModel } = require("../../models/products");
 const { AnyType } = require("../typeDefs/public.type");
 const { UserModel } = require("../../models/users");
-const { copyObject } = require("../../utils/functions");
+const { copyObject, getBasketOfUser } = require("../../utils/functions");
 
 const getUserBookmarkedBlogs = {
     type : new GraphQLList(BlogType),
@@ -68,56 +68,8 @@ const getUserBasket = {
     resolve : async(_,args , context) => {
         const {req} = context
         const user = await verifyAccessTokenInGraphQl(req)
-        const userDetail = await UserModel.aggregate([
-            {
-                $match:{_id: user._id}
-            },
-            {
-                $project:{basket : 1}
-            },
-            {
-                $lookup:{
-                    from:'products',
-                    localField:'basket.products.productID',
-                    foreignField:'_id',
-                    as:'productDetail'
-                }
-            },{
-                $lookup:{
-                    from:'courses',
-                    localField:'basket.courses.courseID',
-                    foreignField:'_id',
-                    as:'courseDetail'
-                }
-            },
-            {
-                $addFields:{
-                    'productDetail':{
-                        $function:{
-                            body: function(productDetail , products){
-                                return productDetail.map(function(product){
-                                    const count = products.find(item => item.productID.valueOf() == product._id.valueOf()).count
-                                    const totalPrice = count * product.price
-                                    return{
-                                        ...product,
-                                        basketCount:count,
-                                        totalPrice
-                                    }
-                                })
-                            },
-                            args:['$productDetail' , '$basket.products'],
-                            lang:'js'
-                        }
-                    }
-                }
-            },
-            {
-                $project:{
-                    basket:0
-                }
-            }
-        ])
-        return copyObject(userDetail)
+        const userDetail = await getBasketOfUser(user._id)
+        return userDetail
     }
 }
 
